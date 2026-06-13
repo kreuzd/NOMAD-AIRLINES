@@ -18,6 +18,44 @@ use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 /// Default localhost port for the embedded backend (override with `NOMAD_PORT`).
 const DEFAULT_PORT: u16 = 8787;
 
+/// Injected into the webview on mobile only. The Android/iOS webview renders
+/// edge-to-edge, so the system status bar and navigation/gesture bar overlap
+/// jspaint's top menu bar and bottom color palette. This adds `viewport-fit=cover`
+/// (required for `env(safe-area-inset-*)` to be populated) and pads jspaint's
+/// root `.jspaint` container by the safe-area insets. `.jspaint` is
+/// `box-sizing: border-box`, so the padding insets the content without
+/// overflowing the viewport.
+#[cfg(mobile)]
+const SAFE_AREA_INIT_SCRIPT: &str = r#"
+(function () {
+  function applySafeArea() {
+    var vp = document.querySelector('meta[name="viewport"]');
+    if (vp && vp.content.indexOf('viewport-fit') === -1) {
+      vp.content = vp.content + ', viewport-fit=cover';
+    }
+    if (!document.getElementById('nomad-safe-area')) {
+      var style = document.createElement('style');
+      style.id = 'nomad-safe-area';
+      style.textContent =
+        '.jspaint{' +
+          'box-sizing:border-box;' +
+          'padding-top:env(safe-area-inset-top);' +
+          'padding-bottom:env(safe-area-inset-bottom);' +
+          'padding-left:env(safe-area-inset-left);' +
+          'padding-right:env(safe-area-inset-right);' +
+        '}';
+      (document.head || document.documentElement).appendChild(style);
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applySafeArea);
+  } else {
+    applySafeArea();
+  }
+  window.addEventListener('load', applySafeArea);
+})();
+"#;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -60,15 +98,26 @@ pub fn run() {
             wait_for_server(&bind_addr, Duration::from_secs(15));
 
             let url = format!("http://{bind_addr}/");
-            WebviewWindowBuilder::new(
+            #[allow(unused_mut)]
+            let mut builder = WebviewWindowBuilder::new(
                 app,
                 "main",
                 WebviewUrl::External(url.parse().expect("valid backend URL")),
             )
             .title("NOMAD Airlines")
             .inner_size(1200.0, 820.0)
-            .min_inner_size(800.0, 600.0)
-            .build()?;
+            .min_inner_size(800.0, 600.0);
+
+            // On mobile the webview draws edge-to-edge, so the system status bar
+            // and navigation/gesture bar overlap the app's top menu and bottom
+            // palette. Inset the UI by the safe-area amounts. Scoped to mobile so
+            // the shared web/desktop frontend is untouched.
+            #[cfg(mobile)]
+            {
+                builder = builder.initialization_script(SAFE_AREA_INIT_SCRIPT);
+            }
+
+            builder.build()?;
 
             Ok(())
         })
