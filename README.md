@@ -25,13 +25,18 @@ The same codebase ships to three targets:
 - **Gallery** (Bootstrap grid, isolated in an iframe so it can't disturb jspaint):
   - **Create** — save the current drawing as a new gallery image.
   - **Import** — from device (file picker → gallery) and from gallery (→ editor).
-  - **Export** — to device (download) and to gallery (save canvas back into an image).
+  - **Export** — download as the original format or export as a **PDF** (binary-safe
+    inline PDF/1.4 generator, no external library).
   - **Manage** — open/edit, rename, delete; per-user, fully access-controlled.
+- **PDF in Save As** — jspaint's *File → Save As* type dropdown includes PDF alongside
+  PNG, JPEG, WebP, GIF, TIFF, and BMP.
 - **Authentication** — register / log in with local credentials; argon2 password
   hashing; JWT bearer tokens issued via an OAuth2 *password*-grant-style endpoint.
 - **State persistence** — your last-opened drawing is remembered server-side
-  (per account), and jspaint's own local autosave restores in-progress work, so
-  you return to where you left off after quitting.
+  (per account), and a **Resume last drawing?** banner on re-entry lets you jump
+  back in with one tap.
+- **Mobile layout** — responsive CSS overlay keeps the toolbar, color palette, and
+  all dialog form controls (including the Save As type dropdown) usable on phones.
 - **SQLite** — users, images (stored as BLOBs), and per-user state.
 - **Tests** — Rust unit + HTTP integration tests for auth, DB, image CRUD
   authorization, and state. (jspaint itself is intentionally not re-tested.)
@@ -62,7 +67,7 @@ NOMAD-AIRLINES/
 │       ├── api.js          # API client
 │       ├── auth.js         # login/register UI
 │       ├── gallery.js      # gallery controller
-│       ├── gallery.css / parent.css
+│       ├── gallery.css / parent.css / mobile.css
 │       └── vendor/         # Bootstrap 5.3.3 (vendored, offline-friendly)
 ├── src-tauri/            # Tauri desktop + Android/iOS shell
 ├── Dockerfile            # web/server image
