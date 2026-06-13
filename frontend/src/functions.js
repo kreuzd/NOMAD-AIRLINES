@@ -1365,6 +1365,14 @@ function show_error_message(message, error) {
 		// 	innerWidth: 600,
 		// },
 	});
+	const viewport_width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+	if (viewport_width > 0 && viewport_width <= 700) {
+		$message.css({
+			maxWidth: `${Math.max(160, viewport_width - 96)}px`,
+			whiteSpace: "normal",
+			overflowWrap: "break-word",
+		});
+	}
 	// $message.css("max-width", "600px");
 	if (error) {
 		const $details = $("<details><summary><span>Details</span></summary></details>")
