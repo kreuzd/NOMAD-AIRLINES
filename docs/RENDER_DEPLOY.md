@@ -16,15 +16,19 @@ The Blueprint sets `NOMAD_JWT_SECRET` with Render's generated secret support, so
 logins keep working across ordinary deploys as long as the service environment is
 preserved.
 
-## Hackathon Persistence
+## Persistence
 
-The free Blueprint intentionally uses the app's existing SQLite database at
-`/data/nomad.db` without adding a paid persistent disk. This is enough to demo
-"same account, same drawings" while the service instance stays alive, but data
-can disappear on restart, redeploy, or instance replacement.
+The Blueprint uses the app's existing SQLite database at `/data/nomad.db` and
+mounts a Render persistent disk at `/data`. Only files under the disk mount are
+preserved across deploys and restarts, so keep `NOMAD_DB_PATH` under `/data`.
 
-For a more durable demo, add a Render persistent disk mounted at `/data`, or move
-gallery images to a managed datastore later.
+Persistent disks require a paid Render service plan and disable zero-downtime
+deploys. For this app, that tradeoff is acceptable for a hackathon because it
+keeps the implementation simple while preserving user drawings.
+
+For the existing `nomad-airlines` Render service, add payment information at
+https://dashboard.render.com/billing before applying the disk. Render returns
+`Payment information is required` when the disk API is called without billing.
 
 ## Local Check
 
