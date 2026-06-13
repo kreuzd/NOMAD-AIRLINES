@@ -115,8 +115,20 @@
 	.os-window .window-content {
 		max-width: 100%;
 		overflow: auto !important;
-		-webkit-overflow-scrolling: touch;
 		box-sizing: border-box;
+	}
+
+	/* os-gui sets user-select: none on .os-window; on iOS Safari this prevents
+	   <select> and <input> from being interactive (native pickers don't open).
+	   Reset form elements explicitly so touch targets work as expected. */
+	.os-window select,
+	.os-window input {
+		-webkit-user-select: auto;
+		user-select: auto;
+		/* Prevent the 300 ms tap delay and avoid scroll-gesture conflicts
+		   in the overflow:auto scroll container above. */
+		touch-action: manipulation;
+		pointer-events: auto;
 	}
 
 	.os-window .window-content > div {
