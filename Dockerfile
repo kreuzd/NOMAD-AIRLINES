@@ -31,8 +31,6 @@ COPY frontend /app/frontend
 ENV PORT=8787 \
     NOMAD_FRONTEND_DIR=/app/frontend \
     NOMAD_DB_PATH=/data/nomad.db
-# Persist the SQLite database across container restarts.
-VOLUME ["/data"]
 EXPOSE 8787
 
 # IMPORTANT: set NOMAD_JWT_SECRET at runtime so tokens survive restarts.
