@@ -2,10 +2,14 @@ services:
   - type: web
     name: nomad-airlines
     runtime: docker
-    plan: free
+    plan: starter
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /api/health
+    disk:
+      name: nomad-data
+      mountPath: /data
+      sizeGB: 1
     envVars:
       - key: PORT
         value: "10000"
