@@ -90,6 +90,12 @@ This repo includes a minimal Render Blueprint at [`render.yaml`](render.yaml).
 See [`docs/RENDER_DEPLOY.md`](docs/RENDER_DEPLOY.md) for the deploy steps and
 the SQLite persistence caveat.
 
+### Railway (cloud deploy with persistent SQLite)
+
+Railway can run the same Docker image with a persistent volume mounted at
+`/data`, keeping gallery drawings in `/data/nomad.db`. See
+[`docs/RAILWAY_DEPLOY.md`](docs/RAILWAY_DEPLOY.md).
+
 ### Backend directly (for development)
 
 Requires a Rust toolchain (1.77+). SQLite is bundled by `rusqlite` — no system
