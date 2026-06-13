@@ -1,0 +1,185 @@
+/* NOMAD Airlines mobile polish for the jspaint parent document.
+   Keep desktop behavior intact; these rules only apply to phone-sized screens. */
+
+@media (max-width: 700px), (max-height: 520px) {
+	html,
+	body,
+	.jspaint {
+		height: 100dvh;
+		min-height: 100dvh;
+	}
+
+	.menus {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+	}
+
+	.menu-button {
+		flex: 0 0 auto;
+		min-height: 28px;
+		padding: 4px 8px;
+		font-size: 14px;
+		line-height: 18px;
+	}
+
+	.jspaint > .vertical,
+	.horizontal {
+		min-height: 0;
+	}
+
+	.horizontal {
+		flex-direction: column;
+	}
+
+	.canvas-area {
+		order: 1;
+		width: 100%;
+		min-height: 220px;
+		padding: 6px;
+		box-sizing: border-box;
+	}
+
+	.horizontal > .component-area {
+		flex: 0 0 auto;
+		max-width: 100%;
+	}
+
+	.horizontal > .component-area.left {
+		order: 2;
+		flex-direction: row;
+		overflow-x: auto;
+		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.horizontal > .component-area.right:empty {
+		display: none;
+	}
+
+	.tools-component {
+		width: max-content;
+		height: auto;
+		min-height: 56px;
+		align-items: center;
+		flex-direction: row;
+		padding: 2px 4px;
+	}
+
+	.tools {
+		width: auto !important;
+		height: 50px !important;
+		flex-flow: column wrap;
+		align-content: flex-start;
+	}
+
+	.tool-options {
+		width: 66px;
+		height: 41px;
+		margin-top: 0;
+		margin-left: 6px;
+		flex: 0 0 auto;
+	}
+
+	.component-area.bottom {
+		max-width: 100%;
+		margin-left: 0;
+		overflow-x: auto;
+		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.colors-component.wide {
+		width: max-content;
+		min-width: max-content;
+	}
+
+	.status-area {
+		display: none !important;
+	}
+
+	.floating-buttons {
+		display: none;
+	}
+
+	.os-window {
+		max-width: calc(100vw - 12px) !important;
+		max-height: calc(100dvh - 12px) !important;
+		left: 6px !important;
+		right: auto !important;
+		box-sizing: border-box;
+	}
+
+	.os-window .window-content {
+		max-width: 100%;
+		overflow: auto !important;
+		-webkit-overflow-scrolling: touch;
+		box-sizing: border-box;
+	}
+
+	.os-window .window-content > div {
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+
+	.os-window .window-content img[width="32"][height="32"] {
+		flex: 0 0 auto;
+		margin: 12px 10px !important;
+	}
+
+	.os-window .window-content button {
+		min-height: 28px;
+	}
+
+	.message-box-window {
+		width: calc(100vw - 12px) !important;
+		white-space: normal !important;
+	}
+
+	.message-box-window .window-content {
+		padding-left: 2px;
+		padding-right: 2px;
+		white-space: normal !important;
+	}
+
+	.message-box-window .message-box-body {
+		align-items: flex-start;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.message-box-window .message-box-message {
+		flex: 1 1 0 !important;
+		max-width: none !important;
+		min-width: 0 !important;
+		overflow-wrap: anywhere;
+	}
+
+	#nomad-gallery-frame {
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 0;
+		border-width: 0;
+	}
+}
+
+@media (max-width: 420px) {
+	.menu-button {
+		padding-left: 6px;
+		padding-right: 6px;
+	}
+
+	.os-window .window-title {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.message-box-window .window-content img[width="32"][height="32"] {
+		margin-left: 8px !important;
+		margin-right: 8px !important;
+	}
+}

@@ -65,16 +65,19 @@ function showMessageBox_implementation({
 }) {
 	let $window, $message;
 	const promise = /** @type {MessageBoxPromise} */ (new Promise((resolve) => {
+		const viewport_width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+		const mobile_inner_width = viewport_width > 0 && viewport_width <= 700 ? Math.max(260, viewport_width - 16) : 400;
 		$window = make_window_supporting_scale(Object.assign({
 			title,
 			resizable: false,
-			innerWidth: 400,
+			innerWidth: mobile_inner_width,
 			maximizeButton: false,
 			minimizeButton: false,
 		}, windowOptions));
+		$window.addClass("message-box-window squish");
 		// $window.addClass("dialog-window horizontal-buttons");
 		$message =
-			$("<div>").css({
+			$("<div>").addClass("message-box-message").css({
 				textAlign: "left",
 				fontFamily: "MS Sans Serif, Arial, sans-serif",
 				fontSize: "14px",
@@ -91,7 +94,7 @@ function showMessageBox_implementation({
 				wordWrap: "break-word",
 			});
 		}
-		$("<div>").append(
+		$("<div>").addClass("message-box-body").append(
 			$("<img width='32' height='32'>").attr("src", `images/${iconID}-32x32-8bpp.png`).css({
 				margin: "16px",
 				display: "block",
