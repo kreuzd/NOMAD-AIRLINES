@@ -3876,6 +3876,54 @@ function write_image_file(canvas, mime_type, blob_callback) {
 		sanity_check_blob(blob, () => {
 			blob_callback(blob);
 		});
+	} else if (mime_type === "application/pdf") {
+		const w = canvas.width;
+		const h = canvas.height;
+		const jpegStr = atob(canvas.toDataURL("image/jpeg", 0.92).split(",")[1]);
+		const jpegLen = jpegStr.length;
+		const enc = new TextEncoder();
+		const parts = [];
+		let pos = 0;
+		const off = /** @type {Record<number,number>} */ ({});
+		const pushStr = (s) => { const b = enc.encode(s); parts.push(b); pos += b.length; };
+		const pushBin = (s) => { const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) { b[i] = s.charCodeAt(i); } parts.push(b); pos += b.length; };
+		const zpad = (n, l) => { let s = `${n}`; while (s.length < l) { s = `0${s}`; } return s; };
+
+		pushStr("%PDF-1.4\n");
+
+		off[1] = pos;
+		pushStr(`1 0 obj\n<</Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegLen}>>\nstream\n`);
+		pushBin(jpegStr);
+		pushStr("\nendstream\nendobj\n");
+
+		off[2] = pos;
+		pushStr("2 0 obj\n<</XObject <</Im1 1 0 R>>>>\nendobj\n");
+
+		const content = `q ${w} 0 0 ${h} 0 0 cm /Im1 Do Q`;
+
+		off[3] = pos;
+		pushStr(`3 0 obj\n<</Type /Page /Parent 4 0 R /MediaBox [0 0 ${w} ${h}] /Contents 5 0 R /Resources 2 0 R>>\nendobj\n`);
+
+		off[4] = pos;
+		pushStr("4 0 obj\n<</Type /Pages /Kids [3 0 R] /Count 1>>\nendobj\n");
+
+		off[5] = pos;
+		pushStr(`5 0 obj\n<</Length ${content.length}>>\nstream\n${content}\nendstream\nendobj\n`);
+
+		off[6] = pos;
+		pushStr("6 0 obj\n<</Type /Catalog /Pages 4 0 R>>\nendobj\n");
+
+		const xrefPos = pos;
+		pushStr("xref\n0 7\n0000000000 65535 f \n");
+		for (let k = 1; k <= 6; k++) { pushStr(`${zpad(off[k], 10)} 00000 n \n`); }
+		pushStr(`trailer\n<</Size 7 /Root 6 0 R>>\nstartxref\n${xrefPos}\n%%EOF`);
+
+		const total = parts.reduce((s, p) => s + p.length, 0);
+		const buf = new Uint8Array(total);
+		let cursor = 0;
+		parts.forEach((p) => { buf.set(p, cursor); cursor += p.length; });
+
+		blob_callback(new Blob([buf], { type: "application/pdf" }));
 	} else {
 		canvas.toBlob((blob) => {
 			// Note: could check blob.type (mime type) instead
