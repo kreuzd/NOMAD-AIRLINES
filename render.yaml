@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: nomad-airlines
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: NOMAD_FRONTEND_DIR
+        value: /app/frontend
+      - key: NOMAD_DB_PATH
+        value: /data/nomad.db
+      - key: NOMAD_JWT_SECRET
+        generateValue: true
+      - key: NOMAD_JWT_EXPIRY_SECS
+        value: "86400"

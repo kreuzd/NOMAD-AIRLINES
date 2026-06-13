@@ -28,7 +28,7 @@ WORKDIR /app
 COPY --from=build /app/backend/target/release/nomad-backend /usr/local/bin/nomad-backend
 COPY frontend /app/frontend
 
-ENV NOMAD_BIND_ADDR=0.0.0.0:8787 \
+ENV PORT=8787 \
     NOMAD_FRONTEND_DIR=/app/frontend \
     NOMAD_DB_PATH=/data/nomad.db
 # Persist the SQLite database across container restarts.
@@ -36,4 +36,4 @@ VOLUME ["/data"]
 EXPOSE 8787
 
 # IMPORTANT: set NOMAD_JWT_SECRET at runtime so tokens survive restarts.
-CMD ["nomad-backend"]
+CMD ["sh", "-c", "export NOMAD_BIND_ADDR=\"${NOMAD_BIND_ADDR:-0.0.0.0:${PORT:-8787}}\"; exec nomad-backend"]

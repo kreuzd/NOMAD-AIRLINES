@@ -84,6 +84,12 @@ docker compose up --build
 
 Set a real secret in `docker-compose.yml` (`NOMAD_JWT_SECRET`) before deploying.
 
+### Render (hackathon cloud deploy)
+
+This repo includes a minimal Render Blueprint at [`render.yaml`](render.yaml).
+See [`docs/RENDER_DEPLOY.md`](docs/RENDER_DEPLOY.md) for the deploy steps and
+the SQLite persistence caveat.
+
 ### Backend directly (for development)
 
 Requires a Rust toolchain (1.77+). SQLite is bundled by `rusqlite` — no system
