@@ -118,16 +118,29 @@
 		box-sizing: border-box;
 	}
 
-	/* os-gui sets user-select: none on .os-window; on iOS Safari this prevents
-	   <select> and <input> from being interactive (native pickers don't open).
-	   Reset form elements explicitly so touch targets work as expected. */
+	/* os-gui/$Window.js sets touch-action: none as an INLINE style on the
+	   entire .os-window. The effective touch-action is the intersection of all
+	   ancestors, so no descendant CSS can soften it — none ∩ X = none.
+	   That blocks the browser from delivering the native tap that opens a
+	   <select> picker on mobile. We override the inline style with !important
+	   (the only way a stylesheet can beat an inline style) and then restore
+	   none only on the titlebar, where it is actually needed for pointer-event
+	   window dragging. */
+	.os-window {
+		touch-action: auto !important;
+	}
+	.os-window .window-titlebar {
+		touch-action: none;
+	}
+
+	/* os-gui also sets user-select: none on .os-window. On iOS Safari, when a
+	   parent has user-select: none, user-select: auto on a descendant computes
+	   to none (it inherits). Use text to force an explicit non-none value so
+	   that <select> and <input> remain interactive. */
 	.os-window select,
 	.os-window input {
-		-webkit-user-select: auto;
-		user-select: auto;
-		/* Prevent the 300 ms tap delay and avoid scroll-gesture conflicts
-		   in the overflow:auto scroll container above. */
-		touch-action: manipulation;
+		-webkit-user-select: text;
+		user-select: text;
 		pointer-events: auto;
 	}
 
