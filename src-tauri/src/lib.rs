@@ -76,19 +76,82 @@ pub fn run() {
         .expect("error while running NOMAD Airlines");
 }
 
-/// Find the frontend directory: bundled resources in a packaged app, else the
-/// repo's `../frontend` during `cargo tauri dev`.
+/// Find the frontend directory the HTTP backend should serve.
+///
+/// * **Desktop** — bundled resources are extracted to the filesystem, so the
+///   `resource_dir/frontend` directory exists and is used directly.
+/// * **Android/iOS** — bundled assets live *inside* the app package and are not
+///   accessible as plain filesystem paths, so the backend's `ServeDir`
+///   (`std::fs`) cannot read them. We instead extract the embedded
+///   `frontendDist` assets to a writable, version-scoped directory once and
+///   serve from there.
+/// * **Dev** (`cargo tauri dev`) — fall back to the repo's `../frontend`.
 fn resolve_frontend_dir(app: &tauri::App) -> String {
+    // Desktop: resources are real files on disk.
     if let Ok(resource_dir) = app.path().resource_dir() {
         let candidate = resource_dir.join("frontend");
         if candidate.join("index.html").exists() {
             return candidate.to_string_lossy().into_owned();
         }
     }
+
+    // Mobile: extract the embedded frontend to a writable directory.
+    if let Ok(data_dir) = app.path().app_data_dir() {
+        let dest = data_dir.join("frontend").join(env!("CARGO_PKG_VERSION"));
+        if extract_frontend_assets(app, &dest) {
+            return dest.to_string_lossy().into_owned();
+        }
+    }
+
+    // Dev fallback: the repo's frontend directory next to the crate.
     std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../frontend")
         .to_string_lossy()
         .into_owned()
+}
+
+/// Extract the embedded `frontendDist` assets into `dest` so the HTTP backend
+/// can serve them from the filesystem on platforms (Android/iOS) where bundled
+/// assets are not real files.
+///
+/// Uses [`AssetResolver::get`] (which decompresses) rather than the raw
+/// [`AssetResolver::iter`] bytes (which are brotli-compressed). With
+/// `security.csp = null` the returned HTML is byte-identical to the source, so
+/// this matches the desktop's real-file serving exactly.
+///
+/// Extraction is skipped when `dest/index.html` already exists, so it runs at
+/// most once per app version. Returns `true` if the index is present afterward.
+fn extract_frontend_assets(app: &tauri::App, dest: &std::path::Path) -> bool {
+    let index = dest.join("index.html");
+    if index.exists() {
+        return true;
+    }
+
+    let resolver = app.asset_resolver();
+    // Collect keys first to avoid holding the iterator while calling `get`.
+    let keys: Vec<String> = resolver.iter().map(|(k, _)| k.into_owned()).collect();
+    for key in keys {
+        let rel = key.trim_start_matches(['/', '\\']);
+        if rel.is_empty() {
+            continue;
+        }
+        let out = dest.join(rel);
+        // Refuse to write outside `dest` (guard against unexpected keys).
+        if !out.starts_with(dest) {
+            continue;
+        }
+        let Some(asset) = resolver.get(key.clone()) else {
+            continue;
+        };
+        if let Some(parent) = out.parent() {
+            if std::fs::create_dir_all(parent).is_err() {
+                continue;
+            }
+        }
+        let _ = std::fs::write(&out, &asset.bytes);
+    }
+
+    index.exists()
 }
 
 /// Block until the backend accepts TCP connections (or the timeout elapses).
