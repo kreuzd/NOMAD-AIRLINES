@@ -1,0 +1,29 @@
+[package]
+name = "nomad-backend"
+version = "0.1.0"
+edition = "2021"
+description = "NOMAD Airlines backend: auth, SQLite gallery, app state, static frontend serving"
+license = "MIT"
+
+[lib]
+name = "nomad_backend"
+path = "src/lib.rs"
+
+[[bin]]
+name = "nomad-backend"
+path = "src/main.rs"
+
+[dependencies]
+argon2 = "0.5.3"
+axum = { version = "0.8.9", features = ["macros"] }
+base64 = "0.22.1"
+getrandom = "0.4.2"
+jsonwebtoken = { version = "10.4.0", default-features = false, features = ["rust_crypto"] }
+rusqlite = { version = "0.40.1", features = ["bundled"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+tokio = { version = "1.52.3", features = ["rt-multi-thread", "macros", "net", "signal"] }
+tower = "0.5.3"
+tower-http = { version = "0.6.11", features = ["fs", "cors", "trace"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }

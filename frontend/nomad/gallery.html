@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>NOMAD Airlines — Gallery</title>
+	<!-- Bootstrap is isolated here in the iframe so it can't disturb jspaint. -->
+	<link href="vendor/bootstrap.min.css" rel="stylesheet">
+	<link href="gallery.css" rel="stylesheet">
+</head>
+<body>
+	<nav class="navbar nomad-navbar px-3">
+		<span class="navbar-brand mb-0 h1">🖼️ NOMAD Airlines Gallery</span>
+		<div class="d-flex align-items-center gap-2">
+			<span id="user-area" class="text-light small"></span>
+			<button id="logout-btn" type="button" class="btn btn-sm btn-outline-light" hidden>Log out</button>
+			<button id="close-btn" type="button" class="btn btn-sm btn-light" title="Close (Esc)">✕</button>
+		</div>
+	</nav>
+
+	<main class="container-fluid py-3">
+		<!-- ===== Authentication ===== -->
+		<section id="auth-section" hidden>
+			<div class="row justify-content-center">
+				<div class="col-12 col-sm-10 col-md-7 col-lg-5">
+					<div class="card shadow-sm">
+						<div class="card-header d-flex gap-2 p-0">
+							<button id="tab-login" type="button" class="btn flex-fill nomad-tab active">Log in</button>
+							<button id="tab-register" type="button" class="btn flex-fill nomad-tab">Create account</button>
+						</div>
+						<div class="card-body">
+							<form id="login-form" novalidate>
+								<div class="mb-3">
+									<label class="form-label" for="login-username">Username</label>
+									<input class="form-control" id="login-username" autocomplete="username" required>
+								</div>
+								<div class="mb-3">
+									<label class="form-label" for="login-password">Password</label>
+									<input class="form-control" id="login-password" type="password" autocomplete="current-password" required>
+								</div>
+								<div id="login-error" class="alert alert-danger py-2" style="display:none"></div>
+								<button class="btn btn-primary w-100" type="submit">Log in</button>
+							</form>
+
+							<form id="register-form" novalidate hidden>
+								<div class="mb-3">
+									<label class="form-label" for="reg-username">Username</label>
+									<input class="form-control" id="reg-username" autocomplete="username" required>
+									<div class="form-text">3–32 chars: letters, digits, <code>_ . -</code></div>
+								</div>
+								<div class="mb-3">
+									<label class="form-label" for="reg-email">Email <span class="text-muted">(optional)</span></label>
+									<input class="form-control" id="reg-email" type="email" autocomplete="email">
+								</div>
+								<div class="mb-3">
+									<label class="form-label" for="reg-password">Password</label>
+									<input class="form-control" id="reg-password" type="password" autocomplete="new-password" required>
+									<div class="form-text">At least 8 characters.</div>
+								</div>
+								<div id="register-error" class="alert alert-danger py-2" style="display:none"></div>
+								<button class="btn btn-primary w-100" type="submit">Create account &amp; log in</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===== Gallery ===== -->
+		<section id="gallery-section" hidden>
+			<div class="d-flex flex-wrap gap-2 align-items-center mb-3" id="toolbar">
+				<button id="save-new-btn" type="button" class="btn btn-success btn-sm">💾 Save current drawing</button>
+				<button id="import-btn" type="button" class="btn btn-primary btn-sm">📥 Import from device</button>
+				<input id="import-file" type="file" accept="image/*" hidden>
+				<button id="refresh-btn" type="button" class="btn btn-outline-secondary btn-sm">↻ Refresh</button>
+				<span class="ms-auto text-muted small" id="gallery-count"></span>
+			</div>
+
+			<div id="resume-banner" class="alert alert-info d-flex justify-content-between align-items-center" hidden>
+				<span id="resume-text"></span>
+				<span>
+					<button id="resume-btn" type="button" class="btn btn-sm btn-info">Resume</button>
+					<button id="resume-dismiss" type="button" class="btn btn-sm btn-outline-secondary">Dismiss</button>
+				</span>
+			</div>
+
+			<div id="gallery-status"></div>
+
+			<div id="empty-state" class="text-center text-muted py-5" hidden>
+				<p class="fs-5 mb-1">Your gallery is empty.</p>
+				<p>Draw something and click <strong>Save current drawing</strong>, or <strong>Import from device</strong>.</p>
+			</div>
+
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3" id="gallery-grid"></div>
+		</section>
+	</main>
+
+	<script src="vendor/bootstrap.bundle.min.js"></script>
+	<script src="api.js"></script>
+	<script src="auth.js"></script>
+	<script src="gallery.js"></script>
+</body>
+</html>

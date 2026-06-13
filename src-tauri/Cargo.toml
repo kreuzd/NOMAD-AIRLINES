@@ -1,0 +1,26 @@
+[package]
+name = "nomad-airlines"
+version = "0.1.0"
+description = "NOMAD Airlines — jspaint-based painter with a SQLite gallery"
+edition = "2021"
+rust-version = "1.77"
+license = "MIT"
+
+# A library target is required for Tauri's mobile (Android/iOS) entry point;
+# the desktop binary in `main.rs` simply calls into it.
+[lib]
+name = "nomad_airlines_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+# The embedded HTTP backend (auth + SQLite gallery + static frontend serving).
+nomad-backend = { path = "../backend" }
+tokio = { version = "1", features = ["rt-multi-thread"] }
+
+[features]
+# This feature is enabled by `tauri build`/`tauri dev` via the custom protocol.
+custom-protocol = ["tauri/custom-protocol"]

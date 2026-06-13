@@ -1,0 +1,18 @@
+services:
+  nomad:
+    build: .
+    image: nomad-airlines:latest
+    container_name: nomad-airlines
+    ports:
+      - "8787:8787"
+    environment:
+      # CHANGE THIS in any real deployment. If unset, a random secret is
+      # generated at startup and tokens won't survive a restart.
+      NOMAD_JWT_SECRET: "change-me-please-use-a-long-random-value"
+      NOMAD_JWT_EXPIRY_SECS: "86400"
+    volumes:
+      - nomad-data:/data
+    restart: unless-stopped
+
+volumes:
+  nomad-data:

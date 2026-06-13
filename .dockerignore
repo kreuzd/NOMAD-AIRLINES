@@ -1,0 +1,9 @@
+.git
+**/target
+src-tauri
+docs
+*.db
+*.db-wal
+*.db-shm
+.DS_Store
+**/*.map

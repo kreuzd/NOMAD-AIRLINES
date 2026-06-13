@@ -1,0 +1,21 @@
+# Rust build artifacts
+/target
+**/target
+
+# SQLite databases / WAL
+*.db
+*.db-wal
+*.db-shm
+
+# Tauri generated (scaffolded by `cargo tauri android/ios init`)
+/src-tauri/gen
+/src-tauri/target
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Node (not used in this repo, but guard against stray installs)
+node_modules/
